@@ -1,33 +1,19 @@
 class Gehalt
-		def brutto
-		#puts "Bruttogehalt eingeben: "
-		input= gets.chomp
-		@bruttogehalt = Integer(input)
-		puts "Bruttogehalt: %.2f" % @bruttogehalt, "----------------------"
-	end
+	def set_brutto (amount, children)
+		@bruttogehalt = amount
 
-####Dienstnehmer####
-	def krankenversicherung_dn
-		@kranken_dn = @bruttogehalt * 0.0387
-	end
+		@kinder = children
+		
+	####Dienstnehmer####
 
-	def pensionsversicherung_dn
-		@pension_dn = @bruttogehalt * 0.1025
-	end
+		#Krankenversicherung
+		@kv_dn = @bruttogehalt * 0.0387
 
-=begin	def arbeitslosenversicherung_dn
-		if @bruttogehalt > 1648
-			@arbeitslosen_dn = @bruttogehalt * 0.03
-		elsif @bruttogehalt <= 1648
-			@arbeitslosen_dn = @bruttogehalt * 0.02
-		elsif @bruttogehalt <= 1464 
-			@arbeitslosen_dn = @bruttogehalt * 0.01
-		elsif @bruttogehalt <= 1342
-			@arbeitslosen_dn = 0
-		end
-=end	end
-	def arbeitslosenversicherung_dn
-		if @bruttogehalt > 1648
+		#Pensionsversicherung
+		@pv_dn = @bruttogehalt * 0.1025
+
+		#Arbeitslosenversicherung
+		if @bruttogehalt > 1648 && @bruttogehalt < 4980
 			@arbeitslosen_dn = @bruttogehalt * 0.03
 		elsif @bruttogehalt <= 1342
 			@arbeitslosen_dn = 0
@@ -36,90 +22,140 @@ class Gehalt
 		elsif @bruttogehalt <= 1648
 			@arbeitslosen_dn = @bruttogehalt * 0.02
 		end
-	end
 
+		#Arbeiterkammerumlage
+		@ak_dn = @bruttogehalt * 0.005
 
-	def arbeiterkammerumlage_dn
-		@arbeit_dn = @bruttogehalt * 0.005
-	end
-
-	def wohnbaufoerderung_dn
+		#Wohnbauförderungsbeitrag
 		@wohnbau_dn = @bruttogehalt * 0.005
-	end
 
-	def versicherung_gesamt_dn
-		@versicherung_dn = @kranken_dn + @pension_dn + @arbeitslosen_dn + @arbeit_dn + @wohnbau_dn
-		puts "Versicherung DN gesamt: %.2f" % @versicherung_dn
-	end
+		#Versicherung DN gesamt
+		@vers_dn = @kv_dn + @pv_dn + @arbeitslosen_dn + @ak_dn + @wohnbau_dn
 
-	def netto
-		@nettogehalt = @bruttogehalt - @versicherung_dn
-		puts "----------------------", "Nettogehalt: %.2f" % @nettogehalt 
-	end
-####Dienstnehmer-END####
+		#Lohnsteuerbemessungsgrundlage
+		@lohnsteuer_bgrundlage = @bruttogehalt - @vers_dn
 
-####Dienstgeber####
-	def krankenversicherung_dg
-		@kranken_dg = @bruttogehalt * 0.0378
-	end
+		#Lohnsteuer		
+		if @kinder == 0
+			if @lohnsteuer_bgrundlage > 7516 && @lohnsteuer_bgrundlage < 83349.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1051.33
+			elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 901.01
+			elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 600.05
+			elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 418.10
+			elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 266.50
+			else
+				@lohnsteuer = 0
+			end
 
-	def pensionsversicherung_dg
-		@pension_dg = @bruttogehalt * 0.1255
-	end
+		elsif @kinder == 1
+			if @lohnsteuer_bgrundlage > 7516 && @lohnsteuer_bgrundlage < 83349.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1092.50
+			elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 942.18
+			elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 641.22
+			elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 459.27
+			elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 307.67
+			else
+				@lohnsteuer = 0
+			end
 
-	def arbeitslosenversicherung_dg
+		elsif @kinder == 2
+			if @lohnsteuer_bgrundlage > 7516 && @lohnsteuer_bgrundlage < 83349.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1107.08
+			elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 956.76
+			elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 655.80
+			elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 473.85
+			elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 322.25
+			else
+				@lohnsteuer = 0
+			end
+
+		elsif @kinder == 3
+			if @lohnsteuer_bgrundlage > 7516 && @lohnsteuer_bgrundlage < 83349.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1125.42
+			elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 975.10
+			elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 674.14
+			elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 492.18
+			elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
+				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 340.58
+			else
+				@lohnsteuer = 0
+			end
+		end
+
+		#Netto
+		@nettogehalt = @bruttogehalt - @vers_dn - @lohnsteuer
+
+=begin
+		####Dienstgeber####
+
+		#Krankenversicherung
+		@kv_dg = @bruttogehalt * 0.0378
+
+		#Pensionsversicherung
+		@pv_dg = @bruttogehalt * 0.1255
+
+		#Arbeitslosenversicherung
 		@arbeitslosen_dg = @bruttogehalt * 0.03
-	end
 
-	def unfallversicherung_dg
-		@unfall_dg = @bruttogehalt * 0.013
-	end
+		#Unfallversicherung
+		@uv_dg = @bruttogehalt * 0.013
 
-	def wohnbaufoerderung_dg
-		@wohnbau_dg = @bruttogehalt * 0.005
-	end
+		#Wohnbauförderungsbetrag
+		@wohnbau_dg = @wohnbau_dn
 
-	def insolvenzentgeltversicherung_dg
+		#Insolvenzentgeltsicherung
 		@insolvenz_dg = @bruttogehalt * 0.0035
-	end
 
-	def betriebliche_vorsorge_dg
+		#Betriebliche Vorsorge
 		@vorsorge_dg = @bruttogehalt * 0.0153
-		puts "Betriebliche Vorsorge: %.2f" % @vorsorge_dg
+
+		#Versicherung DG gesamt		
+		@vers_dg = kv_dg + @pv_dg + @arbeitslosen_dn + @uv_dg + @wohnbau_dn + @insolvenz_dg + @vorsorge_dg
+=end
 	end
 
-	def versicherung_gesamt_dg
-		@versicherung_dg = @kranken_dg + @pension_dg + @arbeitslosen_dg + @unfall_dg + @wohnbau_dg + @insolvenz_dg
-		puts "Versicherung DG gesamt: %.2f" % @versicherung_dg
-	end 
-####Dienstgeber-END####
+	def get_kinder
+		@kinder
+	end
 
+	def get_brutto
+		@bruttogehalt
+	end
 
+	def get_vers_dn
+		@vers_dn
+	end
 
+	def get_lohnsteuer
+		@lohnsteuer
+	end
+
+	def get_netto
+		@nettogehalt
+	end
 end
 
 gehalt = Gehalt.new
 
-gehalt.brutto
-#Versicherung DN
-gehalt.krankenversicherung_dn
-gehalt.pensionsversicherung_dn
-gehalt.arbeitslosenversicherung_dn
-gehalt.arbeiterkammerumlage_dn
-gehalt.wohnbaufoerderung_dn
-#Versicherung DN
-gehalt.versicherung_gesamt_dn
+gehalt.set_brutto gets.chomp.to_i, 0
+puts "Brutto monatlich: %.2f" % gehalt.get_brutto
+puts "Kinder: #{gehalt.get_kinder}"
+puts "Versicherungen DN: %.2f" % gehalt.get_vers_dn
+puts "Lohnsteuer DN: %.2f" % gehalt.get_lohnsteuer
+puts "Netto monatlich: %.2f" % gehalt.get_netto
 
-#Versicherung DG
-gehalt.krankenversicherung_dg
-gehalt.pensionsversicherung_dg
-gehalt.arbeitslosenversicherung_dg
-gehalt.unfallversicherung_dg
-gehalt.wohnbaufoerderung_dg
-gehalt.insolvenzentgeltversicherung_dg
-gehalt.betriebliche_vorsorge_dg
-#Versicherung DG
-gehalt.versicherung_gesamt_dg
-
-
-gehalt.netto
