@@ -1,8 +1,12 @@
 class Gehalt
-	def set_brutto (amount, children)
-		@bruttogehalt = amount
+	def initialize gehalt, kinder
+		@nettoinput = gehalt
 
-		@kinder = children
+		@bruttogehalt = gehalt
+
+		@kinder = kinder
+
+###Brutto zu Netto###
 		
 	####Dienstnehmer####
 
@@ -66,35 +70,6 @@ class Gehalt
 				@lohnsteuer = 0
 			end
 
-		elsif @kinder == 2
-			if @lohnsteuer_bgrundlage > 7516 && @lohnsteuer_bgrundlage < 83349.33
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1107.08
-			elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 956.76
-			elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 655.80
-			elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 473.85
-			elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 322.25
-			else
-				@lohnsteuer = 0
-			end
-
-		elsif @kinder == 3
-			if @lohnsteuer_bgrundlage > 7516 && @lohnsteuer_bgrundlage < 83349.33
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1125.42
-			elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 975.10
-			elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 674.14
-			elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 492.18
-			elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
-				@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 340.58
-			else
-				@lohnsteuer = 0
-			end
 		end
 
 		#Netto
@@ -127,14 +102,33 @@ class Gehalt
 		#Versicherung DG gesamt		
 		@vers_dg = kv_dg + @pv_dg + @arbeitslosen_dn + @uv_dg + @wohnbau_dn + @insolvenz_dg + @vorsorge_dg
 =end
+
+###Netto zu Brutto###
+if @netto == @gehalt
+	
+		@lohnsteuer = (@lohnsteuer_bgrundlage * 0.50) - 1051.33
+	elsif @lohnsteuer_bgrundlage > 5016 && @lohnsteuer_bgrundlage < 7516
+		@lohnsteuer = (@lohnsteuer_bgrundlage * 0.48) - 901.01
+	elsif @lohnsteuer_bgrundlage > 2599.33 && @lohnsteuer_bgrundlage < 5016
+		@lohnsteuer = (@lohnsteuer_bgrundlage * 0.42) - 600.05
+	elsif @lohnsteuer_bgrundlage > 1516 && @lohnsteuer_bgrundlage < 2599.33
+		@lohnsteuer = (@lohnsteuer_bgrundlage * 0.35) - 418.10
+	elsif @lohnsteuer_bgrundlage > 1066 && @lohnsteuer_bgrundlage < 1516
+		@lohnsteuer = (@lohnsteuer_bgrundlage * 0.25) - 266.50
 	end
 
-	def get_kinder
-		@kinder
+	end
+
+	def get_methode
+		@methode
 	end
 
 	def get_brutto
 		@bruttogehalt
+	end
+
+	def get_kinder
+		@kinder
 	end
 
 	def get_vers_dn
@@ -148,14 +142,78 @@ class Gehalt
 	def get_netto
 		@nettogehalt
 	end
+
 end
 
-gehalt = Gehalt.new
+class GehaltPrinter
+	def initialize gehaltToPrint
+		@gehaltToPrint = gehaltToPrint
+	end
 
-gehalt.set_brutto gets.chomp.to_i, 0
-puts "Brutto monatlich: %.2f" % gehalt.get_brutto
-puts "Kinder: #{gehalt.get_kinder}"
-puts "Versicherungen DN: %.2f" % gehalt.get_vers_dn
-puts "Lohnsteuer DN: %.2f" % gehalt.get_lohnsteuer
-puts "Netto monatlich: %.2f" % gehalt.get_netto
+	def show
+		if $methode == "brutto"
+			puts "Kinder: #{@gehaltToPrint.get_kinder}"
+			puts "Versicherungskosten anzeigen? (j/n)"
+			print "> "
+			STDOUT.flush
+			vers_anzeigen = gets.chomp
+			vers_anzeigen.downcase!
+			if vers_anzeigen == "j"
+				puts ">> Versicherungenkosten DN: %.2f" % @gehaltToPrint.get_vers_dn
+			end
+
+			puts "Lohnsteuer anzeigen? (j/n)"
+			print "> "
+			STDOUT.flush
+			lohnst_anzeigen = gets.chomp
+			lohnst_anzeigen.downcase!
+			if lohnst_anzeigen == "j"
+				puts ">> Lohnsteuer DN: %.2f" % @gehaltToPrint.get_lohnsteuer
+			end
+			puts "------------------", ">> Netto monatlich: %.2f" % @gehaltToPrint.get_netto
+		else
+			puts "Netto berechnen"
+		end
+			
+	end
+
+
+end
+rechner = "j"
+$methode = ""
+while rechner == "j" do
+	puts "Was soll berechnet werden? (brutto/netto): "
+	print "> "
+	STDOUT.flush
+	$methode = gets.chomp
+	$methode.downcase!
+	if $methode == "netto"
+		print "Nettogehalt (monatlich) eingeben: "
+		STDOUT.flush
+	elsif $methode == "brutto"	
+		print "Bruttogehalt (monatlich) eingeben: "
+		STDOUT.flush
+	end
+
+	gehalt = Gehalt.new gets.chomp.to_f, 0
+
+	printer = GehaltPrinter.new gehalt
+
+	printer.show
+
+	#Erneut berechnen - Schleife 
+	puts "\n\n==============", "Erneut berechnen? (j/n)", "=============="
+	print "> "
+	STDOUT.flush
+	rechner = gets.chomp
+	rechner.downcase!
+end
+
+
+
+
+
+
+
+
 
