@@ -33,8 +33,11 @@ class Gehalt
 		@wohnbau_dn = @gehalt * 0.005
 
 		#Versicherung DN gesamt
-		@vers_dn = @kv_dn + @pv_dn + @arbeitslosen_dn + @ak_dn + @wohnbau_dn
-
+		if @gehalt > 425
+			@vers_dn = @kv_dn + @pv_dn + @arbeitslosen_dn + @ak_dn + @wohnbau_dn
+		elsif @gehalt <=425
+			@vers_dn = 0
+		end
 		#Lohnsteuerbemessungsgrundlage
 		@lohnsteuer_bgrundlage = @gehalt - @vers_dn
 
@@ -74,7 +77,6 @@ class Gehalt
 		#Netto
 		@nettogehalt = @gehalt - @vers_dn - @lohnsteuer
 
-		##!@bruttogehalt = @nettogehalt +
 
 
 	####Dienstgeber####
@@ -101,12 +103,30 @@ class Gehalt
 		@vorsorge_dg = @gehalt * 0.0153
 
 		#Versicherung DG gesamt		
-		@vers_dg = @kv_dg + @pv_dg + @arbeitslosen_dn + @uv_dg + @wohnbau_dn + @insolvenz_dg + @vorsorge_dg
+		@vers_dg = @kv_dg + @pv_dg + @arbeitslosen_dg + @uv_dg + @wohnbau_dg + @insolvenz_dg + @vorsorge_dg
 
 	###Dienstgeber ENDE####
 
-		
-	
+###Netto zu Brutto###
+		if $methode == "brutto"
+			@nettogehalt = gehalt
+
+			@bruttogehalt = @nettogehalt + @vers_dn + @lohnsteuer
+			if @bruttogehalt <1200
+				@bruttogehalt = @bruttogehalt * 1.028
+			elsif @bruttogehalt <=1500 && @bruttogehalt >=1200
+				@bruttogehalt = @bruttogehalt * 1.08
+			elsif @bruttogehalt <=1700 && @bruttogehalt > 1500
+				@bruttogehalt = @bruttogehalt * 1.12
+			elsif @bruttogehalt <=1950 && @bruttogehalt > 1700
+				@bruttogehalt = @bruttogehalt * 1.14
+			elsif @bruttogehalt <=2150 && @bruttogehalt > 1950
+				@bruttogehalt = @bruttogehalt * 1.18
+			elsif @bruttogehalt > 2150
+				@bruttogehalt = @bruttogehalt * 1.265
+			end
+
+		end
 
 
 	
@@ -182,13 +202,12 @@ class GehaltPrinter
 			dg_anzeigen = gets.chomp
 			dg_anzeigen.downcase!
 			if dg_anzeigen == "j"
-				puts ">> Versicherungskosten DG: %.2f" % @gehaltToPrint.get_vers_dg
+				puts ">> Versicherungskosten + Betriebliche Vorsorge DG: %.2f" % @gehaltToPrint.get_vers_dg
 			end
 
 			puts "-------------------", ">> Netto monatlich: %.2f" % @gehaltToPrint.get_netto, "                    ======="
 		else
-			puts "-------------------",  ">> bei Brutto monatlich: %.2f" % @gehaltToPrint.get_brutto
-			puts "-->Netto monatlich: %.2f" % @gehaltToPrint.get_netto,  "                   ======="
+			puts "-------------------",  ">> Brutto monatlich ungefähr: %.2f" % @gehaltToPrint.get_brutto
 		end
 			
 	end
